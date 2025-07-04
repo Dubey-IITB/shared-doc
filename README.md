@@ -2,13 +2,13 @@
 
 This is the root of the SharedDoc project, a scalable Google Docs-like collaborative document editor.
 
-The main web application is located in the `shared-doc/` directory.
+The main web application is located in the `shared-doc-fe/` directory.
 
 ## Quick Start
 
 1. Change into the app directory:
    ```sh
-   cd shared-doc
+   cd shared-doc-fe
    ```
 2. Install dependencies:
    ```sh
@@ -24,7 +24,7 @@ The main web application is located in the `shared-doc/` directory.
 
 ```
 .
-├── shared-doc/         # Next.js 14 app (main codebase)
+├── shared-doc-fe/      # Next.js 14 app (main codebase)
 │   ├── src/
 │   ├── package.json
 │   └── ...
@@ -36,7 +36,7 @@ The main web application is located in the `shared-doc/` directory.
 
 For full features, tech stack, and contribution guidelines, see:
 
-➡️ [`shared-doc/README.md`](shared-doc/README.md)
+➡️ [`shared-doc-fe/README.md`](shared-doc-fe/README.md)
 
 ---
 
