@@ -76,4 +76,3 @@ MIT — see [LICENSE](LICENSE)
 
 ---
 
-Built with ❤️ by the SharedDoc team

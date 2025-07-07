@@ -13,8 +13,10 @@ interface Document {
 
 export default function DocumentsPage() {
   const [documents, setDocuments] = useState<Document[]>([]);
+  const [filteredDocuments, setFilteredDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [newDocTitle, setNewDocTitle] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [creating, setCreating] = useState(false);
   const router = useRouter();
@@ -27,6 +29,18 @@ export default function DocumentsPage() {
     }
     fetchDocuments();
   }, [router]);
+
+  // Filter documents when search query or documents change
+  useEffect(() => {
+    if (searchQuery.trim() === "") {
+      setFilteredDocuments(documents);
+    } else {
+      const filtered = documents.filter(doc =>
+        doc.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredDocuments(filtered);
+    }
+  }, [searchQuery, documents]);
 
   const fetchDocuments = async () => {
     const token = localStorage.getItem("token");
@@ -111,6 +125,10 @@ export default function DocumentsPage() {
     return new Date(dateString).toLocaleDateString();
   };
 
+  const clearSearch = () => {
+    setSearchQuery("");
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
@@ -171,10 +189,45 @@ export default function DocumentsPage() {
           )}
         </div>
 
+        {/* Search Bar */}
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+          <div className="flex items-center space-x-4">
+            <div className="flex-1 relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search documents by title..."
+                className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+            </div>
+            {searchQuery && (
+              <button
+                onClick={clearSearch}
+                className="text-gray-500 hover:text-gray-700 text-sm font-medium"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+          {searchQuery && (
+            <div className="mt-2 text-sm text-gray-600">
+              Found {filteredDocuments.length} document{filteredDocuments.length !== 1 ? 's' : ''} matching "{searchQuery}"
+            </div>
+          )}
+        </div>
+
         {/* Documents List */}
         <div className="bg-white rounded-xl shadow-lg p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-900">Your Documents</h2>
+            <h2 className="text-xl font-semibold text-gray-900">
+              Your Documents {searchQuery && `(${filteredDocuments.length} found)`}
+            </h2>
             <button
               onClick={fetchDocuments}
               className="text-blue-600 hover:text-blue-700 text-sm font-medium"
@@ -183,19 +236,33 @@ export default function DocumentsPage() {
             </button>
           </div>
           
-          {documents.length === 0 ? (
+          {filteredDocuments.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-gray-600 mb-4">You don't have any documents yet.</p>
-              <button
-                onClick={() => setShowCreateForm(true)}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Create Your First Document
-              </button>
+              {searchQuery ? (
+                <>
+                  <p className="text-gray-600 mb-4">No documents found matching "{searchQuery}"</p>
+                  <button
+                    onClick={clearSearch}
+                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Clear Search
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p className="text-gray-600 mb-4">You don't have any documents yet.</p>
+                  <button
+                    onClick={() => setShowCreateForm(true)}
+                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Create Your First Document
+                  </button>
+                </>
+              )}
             </div>
           ) : (
             <div className="grid gap-4">
-              {documents.map((doc) => (
+              {filteredDocuments.map((doc) => (
                 <div
                   key={doc.id}
                   className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
