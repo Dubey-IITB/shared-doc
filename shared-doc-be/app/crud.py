@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from app import models
 from passlib.context import CryptContext
+from datetime import datetime
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -19,8 +20,8 @@ def create_user(db: Session, username: str, password: str):
     db.add(user)
     db.commit()
     db.refresh(user)
-    # Create a blank document for the user
-    doc = models.Document(title="Untitled Document", content="", owner_id=user.id)
+    # Create a default document for the user
+    doc = models.Document(title="My First Document", content="", owner_id=user.id)
     db.add(doc)
     db.commit()
     db.refresh(doc)
@@ -32,14 +33,33 @@ def authenticate_user(db: Session, username: str, password: str):
         return None
     return user
 
-def get_document_by_user_id(db: Session, user_id: int):
-    return db.query(models.Document).filter(models.Document.owner_id == user_id).first()
+def get_documents_by_user_id(db: Session, user_id: int):
+    return db.query(models.Document).filter(models.Document.owner_id == user_id).order_by(models.Document.updated_at.desc()).all()
 
-def update_document(db: Session, user_id: int, title: str, content: str):
-    doc = get_document_by_user_id(db, user_id)
+def get_document_by_id(db: Session, document_id: int, user_id: int):
+    return db.query(models.Document).filter(models.Document.id == document_id, models.Document.owner_id == user_id).first()
+
+def create_document(db: Session, user_id: int, title: str):
+    doc = models.Document(title=title, content="", owner_id=user_id)
+    db.add(doc)
+    db.commit()
+    db.refresh(doc)
+    return doc
+
+def update_document(db: Session, document_id: int, user_id: int, title: str, content: str):
+    doc = get_document_by_id(db, document_id, user_id)
     if doc:
         doc.title = title
         doc.content = content
+        doc.updated_at = datetime.utcnow()
         db.commit()
         db.refresh(doc)
-    return doc 
+    return doc
+
+def delete_document(db: Session, document_id: int, user_id: int):
+    doc = get_document_by_id(db, document_id, user_id)
+    if doc:
+        db.delete(doc)
+        db.commit()
+        return True
+    return False 

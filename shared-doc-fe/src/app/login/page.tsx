@@ -34,7 +34,7 @@ export default function Login() {
       const data = await response.json()
       localStorage.setItem('token', data.access_token)
       localStorage.setItem('username', email) // Store username for display
-      router.push('/user') // Redirect to doc editing page
+      router.push('/documents') // Redirect to documents list
     } catch (err) {
       alert('An error occurred during login.')
     } finally {

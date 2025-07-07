@@ -42,7 +42,7 @@ export default function Home() {
               <>
                 <span className="text-gray-700 font-medium">Welcome, {username}</span>
                 <Link 
-                  href="/user" 
+                  href="/documents" 
                   className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium"
                 >
                   My Docs
@@ -90,7 +90,7 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
             {isLoggedIn ? (
               <Link 
-                href="/user" 
+                href="/documents" 
                 className="bg-blue-600 text-white px-8 py-4 rounded-lg hover:bg-blue-700 transition-all duration-200 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1"
               >
                 Go to My Documents
