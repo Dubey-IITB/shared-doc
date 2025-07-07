@@ -31,7 +31,7 @@ def get_document(current_user=Depends(get_current_user), db: Session = Depends(g
 
 @router.post("/document", response_model=schemas.DocumentOut)
 def save_document(doc_in: schemas.DocumentIn, current_user=Depends(get_current_user), db: Session = Depends(get_db)):
-    doc = crud.update_document(db, current_user.id, doc_in.content)
+    doc = crud.update_document(db, current_user.id, doc_in.title, doc_in.content)
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found")
     return doc 

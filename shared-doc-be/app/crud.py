@@ -20,7 +20,7 @@ def create_user(db: Session, username: str, password: str):
     db.commit()
     db.refresh(user)
     # Create a blank document for the user
-    doc = models.Document(content="", owner_id=user.id)
+    doc = models.Document(title="Untitled Document", content="", owner_id=user.id)
     db.add(doc)
     db.commit()
     db.refresh(doc)
@@ -35,9 +35,10 @@ def authenticate_user(db: Session, username: str, password: str):
 def get_document_by_user_id(db: Session, user_id: int):
     return db.query(models.Document).filter(models.Document.owner_id == user_id).first()
 
-def update_document(db: Session, user_id: int, content: str):
+def update_document(db: Session, user_id: int, title: str, content: str):
     doc = get_document_by_user_id(db, user_id)
     if doc:
+        doc.title = title
         doc.content = content
         db.commit()
         db.refresh(doc)

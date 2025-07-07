@@ -13,6 +13,7 @@ class User(Base):
 class Document(Base):
     __tablename__ = "documents"
     id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, default="Untitled Document")
     content = Column(Text, default="")
     owner_id = Column(Integer, ForeignKey("users.id"), unique=True)
     owner = relationship("User", back_populates="document") 

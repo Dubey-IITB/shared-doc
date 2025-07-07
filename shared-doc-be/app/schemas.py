@@ -16,10 +16,12 @@ class Token(BaseModel):
     token_type: str
 
 class DocumentIn(BaseModel):
+    title: str
     content: str
 
 class DocumentOut(BaseModel):
     id: int
+    title: str
     content: str
     class Config:
         from_attributes = True 
