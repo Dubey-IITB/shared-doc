@@ -1,6 +1,31 @@
+"use client"
+
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function Home() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [username, setUsername] = useState('')
+  const router = useRouter()
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      setIsLoggedIn(true)
+      // Extract username from token or localStorage
+      const storedUsername = localStorage.getItem('username') || 'User'
+      setUsername(storedUsername)
+    }
+  }, [])
+
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('username')
+    setIsLoggedIn(false)
+    setUsername('')
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
       {/* Navigation */}
@@ -13,18 +38,38 @@ export default function Home() {
             <span className="text-xl font-bold text-gray-900">SharedDoc</span>
           </div>
           <div className="flex items-center space-x-4">
-            <Link 
-              href="/login" 
-              className="text-gray-600 hover:text-gray-900 transition-colors duration-200"
-            >
-              Sign In
-            </Link>
-            <Link 
-              href="/register" 
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium"
-            >
-              Get Started
-            </Link>
+            {isLoggedIn ? (
+              <>
+                <span className="text-gray-700 font-medium">Welcome, {username}</span>
+                <Link 
+                  href="/user" 
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium"
+                >
+                  My Docs
+                </Link>
+                <button 
+                  onClick={handleLogout}
+                  className="text-gray-600 hover:text-gray-900 transition-colors duration-200"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link 
+                  href="/login" 
+                  className="text-gray-600 hover:text-gray-900 transition-colors duration-200"
+                >
+                  Sign In
+                </Link>
+                <Link 
+                  href="/register" 
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium"
+                >
+                  Get Started
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </nav>
@@ -43,18 +88,29 @@ export default function Home() {
           
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
-            <Link 
-              href="/register" 
-              className="bg-blue-600 text-white px-8 py-4 rounded-lg hover:bg-blue-700 transition-all duration-200 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-            >
-              Start Writing Now
-            </Link>
-            <Link 
-              href="/login" 
-              className="border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-all duration-200 font-semibold text-lg"
-            >
-              Sign In to Continue
-            </Link>
+            {isLoggedIn ? (
+              <Link 
+                href="/user" 
+                className="bg-blue-600 text-white px-8 py-4 rounded-lg hover:bg-blue-700 transition-all duration-200 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              >
+                Go to My Documents
+              </Link>
+            ) : (
+              <>
+                <Link 
+                  href="/register" 
+                  className="bg-blue-600 text-white px-8 py-4 rounded-lg hover:bg-blue-700 transition-all duration-200 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                >
+                  Start Writing Now
+                </Link>
+                <Link 
+                  href="/login" 
+                  className="border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-all duration-200 font-semibold text-lg"
+                >
+                  Sign In to Continue
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Features Grid */}

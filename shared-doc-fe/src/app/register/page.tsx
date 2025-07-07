@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -25,14 +26,35 @@ export default function Register() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    
-    // TODO: Implement actual registration logic
-    console.log('Registration attempt:', formData)
-    
-    // Simulate API call
-    setTimeout(() => {
+    if (formData.password !== formData.confirmPassword) {
+      alert('Passwords do not match')
       setIsLoading(false)
-    }, 1000)
+      return
+    }
+    try {
+      const response = await fetch('http://localhost:8000/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: formData.email,
+          password: formData.password,
+        }),
+      })
+      if (!response.ok) {
+        const errorData = await response.json()
+        alert(errorData.detail || 'Registration failed')
+        setIsLoading(false)
+        return
+      }
+      const router = useRouter()
+      router.push('/login') // Redirect to login page
+    } catch (err) {
+      alert('An error occurred during registration.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (

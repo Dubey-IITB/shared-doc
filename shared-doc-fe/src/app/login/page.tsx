@@ -2,23 +2,44 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
+  const router = useRouter()
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    
-    // TODO: Implement actual login logic
-    console.log('Login attempt:', { email, password })
-    
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      const response = await fetch('http://localhost:8000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          username: email,
+          password: password,
+        }),
+      })
+      if (!response.ok) {
+        const errorData = await response.json()
+        alert(errorData.detail || 'Login failed')
+        setIsLoading(false)
+        return
+      }
+      const data = await response.json()
+      localStorage.setItem('token', data.access_token)
+      localStorage.setItem('username', email) // Store username for display
+      router.push('/user') // Redirect to doc editing page
+    } catch (err) {
+      alert('An error occurred during login.')
+    } finally {
       setIsLoading(false)
-    }, 1000)
+    }
   }
 
   return (
